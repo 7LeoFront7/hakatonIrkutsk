@@ -1,35 +1,40 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React from 'react';
+import useSwrFetch from './hooks/useGetBase.ts';
 
-function App() {
-  const [count, setCount] = useState(0)
-
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+// Интерфейс для данных, которые мы ожидаем получить от API
+interface Post {
+    userId: number;
+    id: number;
+    title: string;
+    body: string;
 }
 
-export default App
+const SwrFetchComponent: React.FC = () => {
+    // Используем хук для выполнения GET-запроса
+    const { data, isLoading, isValidating, error } = useSwrFetch<Post>(
+        'https://jsonplaceholder.typicode.com/posts/1'
+    );
+
+    return (
+        <div>
+            <h1>Пример использования хука useSwrFetch</h1>
+
+            {isLoading && <p>Загрузка...</p>}
+
+            {isValidating && <p>Обновление данных...</p>}
+
+            {error && <p style={{ color: 'red' }}>Ошибка: {error.message}</p>}
+
+            {data && (
+                <div>
+                    <h2>Данные:</h2>
+                    <p>ID: {data.id}</p>
+                    <p>Заголовок: {data.title}</p>
+                    <p>Текст: {data.body}</p>
+                </div>
+            )}
+        </div>
+    );
+};
+
+export default SwrFetchComponent;
