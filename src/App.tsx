@@ -1,6 +1,6 @@
 import React from 'react';
 import Dashboard from './Dashboard.tsx';
-import { MainProvider } from './context/mainProvider.ts';
+import { MainProvider } from './context';
 // Интерфейс для данных, которые мы ожидаем получить от API
 interface Post {
   userId: number;
@@ -11,7 +11,7 @@ interface Post {
 
 const SwrFetchComponent: React.FC = () => {
   return (
-    <MainProvider value={{}}>
+    <MainProvider >
       <Dashboard />
     </MainProvider>
   );

@@ -21,6 +21,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import { visuallyHidden } from '@mui/utils';
 import { useGetSessionsByInn } from '../api/useGetSessionsByInn';
+import { useMainContext } from '../context';
 
 interface Data {
   id: number;
@@ -48,8 +49,6 @@ function createData(
     protein,
   };
 }
-
-const { data: providers, loading: loadingProviders } = useGetSessionsByInn();
 
 const rows = [
   createData(1, 'Cupcake', 305, 3.7, 67, 4.3),
@@ -150,6 +149,9 @@ function EnhancedTableHead(props: EnhancedTableProps) {
     (property: keyof Data) => (event: React.MouseEvent<unknown>) => {
       onRequestSort(event, property);
     };
+  const { innState } = useMainContext();
+  const { data: providers, loading: loadingProviders } =
+    useGetSessionsByInn(innState);
 
   return (
     <TableHead>

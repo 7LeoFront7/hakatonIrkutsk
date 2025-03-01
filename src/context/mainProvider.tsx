@@ -3,6 +3,7 @@ import { MainContext } from './mainContext';
 
 export function MainProvider({ children, value }) {
   const [innState, setInnState] = useState(null);
+
   const onSetInnState = useCallback((arg) => {
     setInnState(arg);
   }, []);

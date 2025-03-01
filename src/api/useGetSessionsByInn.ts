@@ -9,11 +9,13 @@ const options = {
   revalidateOnReconnect: false,
 };
 
-const URL = `endpoints.getAllProviders.path${providerInn}`;
+const URL = `${endpoints.getAllProviders.path}`;
 
-export function useGetSessionsByInn() {
+export function useGetSessionsByInn(inn) {
+  const url = inn? `${URL}`: null
+  const params= {inn}
   const { data, isLoading, isValidating, error } = useSWR(
-    URL,
+    [url, {params}],
     fetcher,
     options
   );

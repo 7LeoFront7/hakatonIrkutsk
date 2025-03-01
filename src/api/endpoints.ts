@@ -3,6 +3,6 @@ export const endpoints = {
     path: '/inns',
   },
   getSessionsCSbyInn: {
-    path: '/sessions?inn=',
+    path: '/sessions',
   },
 };
