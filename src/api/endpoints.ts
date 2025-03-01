@@ -5,4 +5,7 @@ export const endpoints = {
   getSessionsCSbyInn: {
     path: '/sessions',
   },
+  getDataStartEndPrice: {
+    path: '/wins_dots',
+  },
 };

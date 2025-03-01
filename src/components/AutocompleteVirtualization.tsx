@@ -2,25 +2,42 @@ import * as React from 'react';
 import TextField from '@mui/material/TextField';
 import Autocomplete, { autocompleteClasses } from '@mui/material/Autocomplete';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import ListSubheader from '@mui/material/ListSubheader';
 import Popper from '@mui/material/Popper';
 import { useTheme, styled } from '@mui/material/styles';
 import { VariableSizeList, ListChildComponentProps } from 'react-window';
 import Typography from '@mui/material/Typography';
+import { useState } from 'react';
 import { useMainContext } from '../context';
 
 const LISTBOX_PADDING = 8; // px
 
 function renderRow(props: ListChildComponentProps) {
   const { data, index, style } = props;
-  const option = data[index]; // Данные опции
+  const dataSet = data[index];
   const inlineStyle = {
     ...style,
     top: (style.top as number) + LISTBOX_PADDING,
   };
 
+  if (dataSet.hasOwnProperty('group')) {
+    return (
+      <ListSubheader key={dataSet.key} component="div" style={inlineStyle}>
+        {dataSet.group}
+      </ListSubheader>
+    );
+  }
+
+  const { key, ...optionProps } = dataSet[0];
   return (
-    <Typography component="li" noWrap style={inlineStyle}>
-      {option.name} (ИНН: {option.inn})
+    <Typography
+      key={key}
+      component="li"
+      {...optionProps}
+      noWrap
+      style={inlineStyle}
+    >
+      {`${dataSet[1].name} (ИНН: ${dataSet[1].inn})`}
     </Typography>
   );
 }
@@ -45,9 +62,19 @@ function useResetCache(data: any) {
 // Adapter for react-window
 const ListboxComponent = React.forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLElement> & { itemData: any[] }
+  React.HTMLAttributes<HTMLElement>
 >(function ListboxComponent(props, ref) {
-  const { children, itemData, ...other } = props;
+  const { children, ...other } = props;
+  const itemData: React.ReactElement<unknown>[] = [];
+  (children as React.ReactElement<unknown>[]).forEach(
+    (
+      item: React.ReactElement<unknown> & {
+        children?: React.ReactElement<unknown>[];
+      }
+    ) => {
+      itemData.push(item);
+    }
+  );
 
   const theme = useTheme();
   const smUp = useMediaQuery(theme.breakpoints.up('sm'), {
@@ -56,11 +83,19 @@ const ListboxComponent = React.forwardRef<
   const itemCount = itemData.length;
   const itemSize = smUp ? 36 : 48;
 
+  const getChildSize = (child: React.ReactElement<unknown>) => {
+    if (child.hasOwnProperty('group')) {
+      return 48;
+    }
+
+    return itemSize;
+  };
+
   const getHeight = () => {
     if (itemCount > 8) {
       return 8 * itemSize;
     }
-    return itemCount * itemSize;
+    return itemData.map(getChildSize).reduce((a, b) => a + b, 0);
   };
 
   const gridRef = useResetCache(itemCount);
@@ -75,7 +110,7 @@ const ListboxComponent = React.forwardRef<
           ref={gridRef}
           outerElementType={OuterElementType}
           innerElementType="ul"
-          itemSize={() => itemSize}
+          itemSize={(index) => getChildSize(itemData[index])}
           overscanCount={5}
           itemCount={itemCount}
         >
@@ -96,49 +131,46 @@ const StyledPopper = styled(Popper)({
   },
 });
 
-export default function Virtualize({ data }) {
-  const [inputValue, setInputValue] = React.useState('');
+export default function Virtualize({ data, loading }) {
+  const [inputValue, setInputValue] = useState('');
   const { innState, onSetInnState } = useMainContext();
 
-  // Функция фильтрации опций по ИНН
   const filterOptions = (options, { inputValue }) => {
-    return options.filter((option) =>
-      option.inn.toString().includes(inputValue)
-    );
-  };
-
-  console.log('state', innState);
-
-  const handleChange = (event: any, newValue: string | null) => {
-    onSetInnState(newValue);
+    const search = inputValue;
+    return options.filter((option) => option.inn.toString().startsWith(search));
   };
 
   return (
     <Autocomplete
-      sx={{ width: 300 }}
+      sx={{
+        width: 600,
+        '& MuiAutocomplete-popupIndicator': { border: 'none' },
+        '& MuiAutocomplete-clearIndicator': { border: 'none' },
+        flexGrow: 1,
+      }}
+      value={innState}
+      onChange={(event, newInputValue) => {
+        onSetInnState(newInputValue);
+      }}
+      inputValue={inputValue}
+      onInputChange={(event, newInputValue) => {
+        setInputValue(newInputValue);
+      }}
       disableListWrap
       options={data}
-      inputValue={inputValue}
-      onChange={handleChange}
-      filterOptions={filterOptions} // Добавляем кастомную фильтрацию
-      renderInput={(params) => (
-        <TextField {...params} label="Выберите организацию" />
-      )}
-      renderOption={(props, option) => (
-        <li {...props} key={option.inn}>
-          {option.name} (ИНН: {option.inn})
-        </li>
-      )}
-      getOptionLabel={(option) => option.name}
+      loading={loading}
+      getOptionLabel={(option) => String(option?.name) || ''}
+      filterOptions={filterOptions}
+      renderInput={(params) => <TextField {...params} label="ИНН поставщика" />}
+      renderOption={(props, option, state) =>
+        [props, option, state.index] as React.ReactNode
+      }
       slots={{
         popper: StyledPopper,
       }}
       slotProps={{
         listbox: {
           component: ListboxComponent,
-          itemData: data.filter((option) =>
-            option.inn.toString().includes(inputValue)
-          ), // Фильтруем данные для виртуального списка
         },
       }}
     />

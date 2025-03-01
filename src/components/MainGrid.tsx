@@ -16,6 +16,7 @@ import React from 'react';
 import SessionsChart from './SessionsChart';
 import StatCard, { StatCardProps } from './StatCard';
 import TableSession from '../components/TableSession';
+import StartEndPriceChart from './StartEndPriceChart';
 
 const data: StatCardProps[] = [
   {
@@ -84,7 +85,7 @@ export default function MainGrid() {
               </Grid>
             ))}
             <Grid size={{ xs: 12, md: 6 }}>
-              <SessionsChart />
+              <StartEndPriceChart />
             </Grid>
             <Grid size={{ xs: 12, md: 6 }}>
               <PageViewsBarChart />

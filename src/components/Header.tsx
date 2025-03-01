@@ -5,14 +5,12 @@ import CustomDatePicker from './CustomDatePicker';
 import MenuButton from './MenuButton';
 import ColorModeIconDropdown from '../theme/ColorModeIconDropdown';
 
-import Search from './Search';
 import { useGetProviders } from '../api/useGetProviders';
 import Virtualize from './AutocompleteVirtualization';
 
 export default function Header() {
   const { data: providers, loading: loadingProviders } = useGetProviders();
 
-  console.log('loading', providers, loadingProviders);
   return (
     <Stack
       direction="row"
@@ -26,9 +24,8 @@ export default function Header() {
       }}
       spacing={2}
     >
-      <Stack direction="row" sx={{ gap: 1 }}>
-        <Search />
-        <Virtualize data={providers} />
+      <Stack direction="row" sx={{ gap: 1, flex: 1 }}>
+        <Virtualize data={providers} loading={loadingProviders} />
         <CustomDatePicker />
         <MenuButton showBadge aria-label="Open notifications">
           <NotificationsRoundedIcon />

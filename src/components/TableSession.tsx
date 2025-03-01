@@ -150,9 +150,10 @@ function EnhancedTableHead(props: EnhancedTableProps) {
       onRequestSort(event, property);
     };
   const { innState } = useMainContext();
-  const { data: providers, loading: loadingProviders } =
-    useGetSessionsByInn(innState);
-
+  const { data: currentInn, loading: loadingProviders } = useGetSessionsByInn(
+    innState?.inn
+  );
+  console.log('currentInn', currentInn, innState);
   return (
     <TableHead>
       <TableRow>
