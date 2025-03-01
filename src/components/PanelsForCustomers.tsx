@@ -8,6 +8,8 @@ import CustomDatePicker from './CustomDatePicker';
 import { useGetCustomers } from '../api/useGetCustomers';
 
 export default function SelectSmall() {
+  const { data, loading: loadingCustomers } = useGetCustomers();
+
   // Инициализация состояния как объекта
   const [customersListCs, setCustomersListCs] = React.useState({
     kpgz: null,
@@ -33,8 +35,12 @@ export default function SelectSmall() {
     all: 'Показать все',
   };
 
+  // Извлекаем массив customers из data
+  const customers = data?.customers || [];
+
   return (
     <LocalizationProvider>
+      {/* Селект для заказчика */}
       <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
         <InputLabel id="customer-select-label">Заказчик</InputLabel>
         <Select
@@ -47,9 +53,12 @@ export default function SelectSmall() {
           <MenuItem value="">
             <em>None</em>
           </MenuItem>
-          <MenuItem value={10}>Первый</MenuItem>
-          <MenuItem value={20}>Второй</MenuItem>
-          <MenuItem value={30}>Третий</MenuItem>
+          {/* Отображаем пункты меню на основе данных из customers */}
+          {customers.map((customer, index) => (
+            <MenuItem key={index} value={customer['Наименование заказчика']}>
+              {customer['Наименование заказчика']}
+            </MenuItem>
+          ))}
         </Select>
       </FormControl>
 

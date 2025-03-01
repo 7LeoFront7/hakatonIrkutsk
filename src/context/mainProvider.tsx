@@ -4,7 +4,7 @@ import { useLocalStorage } from '../hooks/useLocalStorage';
 
 const STORAGE_KEY = 'inn';
 export function MainProvider({ children, value }) {
-  const [innState, setInnState] = useState(null);
+  const [innState, setInnState] = useState(7721663977);
   const { state, update, reset } = useLocalStorage(STORAGE_KEY);
 
   const onSetInnState = useCallback((arg) => {

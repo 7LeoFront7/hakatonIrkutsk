@@ -20,17 +20,15 @@ import Switch from '@mui/material/Switch';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import { visuallyHidden } from '@mui/utils';
-import { useGetSessionsByInn } from '../api/useGetSessionsByInn';
-import { useMainContext } from '../context';
-import { useGetProviders } from '../api/useGetProviders';
 import { useGetCustomers } from '../api/useGetCustomers';
+import { useMainContext } from '../context';
 
 interface Data {
   id: number;
-  calories: number;
-  carbs: number;
-  fat: number;
   name: string;
+  calories: number;
+  fat: number;
+  carbs: number;
   protein: number;
 }
 
@@ -52,7 +50,7 @@ function createData(
   };
 }
 
-const rows = [];
+const initialRows: Data[] = [];
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {
@@ -90,7 +88,7 @@ const headCells: readonly HeadCell[] = [
     id: 'name',
     numeric: false,
     disablePadding: true,
-    label: 'Все заказчики',
+    label: 'Наименование заказчика',
   },
   {
     id: 'calories',
@@ -111,13 +109,7 @@ const headCells: readonly HeadCell[] = [
     label: 'Дата окончания КС',
   },
   {
-    id: 'carbs',
-    numeric: true,
-    disablePadding: false,
-    label: 'Моё участие в КС',
-  },
-  {
-    id: 'carbs',
+    id: 'protein',
     numeric: true,
     disablePadding: false,
     label: 'Регион заказчика',
@@ -149,8 +141,6 @@ function EnhancedTableHead(props: EnhancedTableProps) {
     (property: keyof Data) => (event: React.MouseEvent<unknown>) => {
       onRequestSort(event, property);
     };
-
-  const { data: customers, loading: loadingCustomers } = useGetCustomers();
 
   return (
     <TableHead>
@@ -191,9 +181,11 @@ function EnhancedTableHead(props: EnhancedTableProps) {
     </TableHead>
   );
 }
+
 interface EnhancedTableToolbarProps {
   numSelected: number;
 }
+
 function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
   const { numSelected } = props;
   return (
@@ -247,6 +239,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
     </Toolbar>
   );
 }
+
 export default function EnhancedTable() {
   const [order, setOrder] = React.useState<Order>('asc');
   const [orderBy, setOrderBy] = React.useState<keyof Data>('calories');
@@ -254,17 +247,28 @@ export default function EnhancedTable() {
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [rows, setRows] = React.useState<Data[]>(initialRows);
 
   const { data, loading: loadingCustomers } = useGetCustomers();
-  console.log(data);
 
-  Object.values(data).forEach((item) => {
-    console.log(item);
-    const customerName = item['Наименование заказчика'];
-    if (customerName) {
-      rows.push(createData(customerName, '0', '0', '0', '0', '0'));
+  React.useEffect(() => {
+    if (data && !loadingCustomers) {
+      // Извлекаем массив first100 из data
+      const first100 = data.first100 || [];
+      // Преобразуем массив first100 в строки таблицы
+      const newRows = first100.map((item, index) =>
+        createData(
+          index + 1, // id
+          item['Наименование заказчика'] || 'Нет данных', // name
+          item['Наименование КПГЗ'] || 'Нет данных', // name
+          item['Начало КС'].slice(0, 10) || 'Нет данных',
+          item['Окончание КС'].slice(0, 10) || 'Нет данных',
+          item['Регион заказчика'] || 'Нет данных'
+        )
+      );
+      setRows(newRows);
     }
-  });
+  }, [data, loadingCustomers]);
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
@@ -318,7 +322,6 @@ export default function EnhancedTable() {
     setDense(event.target.checked);
   };
 
-  // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
@@ -327,13 +330,16 @@ export default function EnhancedTable() {
       [...rows]
         .sort(getComparator(order, orderBy))
         .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
-    [order, orderBy, page, rowsPerPage]
+    [order, orderBy, page, rowsPerPage, rows]
   );
+
+  const { innState } = useMainContext();
 
   return (
     <Box sx={{ width: '100%' }}>
       <Paper sx={{ width: '100%', mb: 2 }}>
         <EnhancedTableToolbar numSelected={selected.length} />
+        {innState}
         <TableContainer>
           <Table
             sx={{ minWidth: 750 }}
