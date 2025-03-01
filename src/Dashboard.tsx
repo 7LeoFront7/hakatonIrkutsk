@@ -11,7 +11,7 @@ import AppNavbar from './components/AppNavbar';
 import Header from './components/Header';
 import MainGrid from './components/MainGrid';
 import SideMenu from './components/SideMenu';
-import AppTheme from '../shared-theme/AppTheme';
+import AppTheme from './theme/AppTheme';
 import {
   chartsCustomizations,
   dataGridCustomizations,
@@ -54,6 +54,7 @@ export default function Dashboard(props: { disableCustomTheme?: boolean }) {
             }}
           >
             <Header />
+
             <MainGrid />
           </Stack>
         </Box>
