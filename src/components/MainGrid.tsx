@@ -18,6 +18,7 @@ import StatCard, { StatCardProps } from './StatCard';
 import TableSession from '../components/TableSession';
 import StartEndPriceChart from './StartEndPriceChart';
 import PanelsForCustomers from './PanelsForCustomers';
+import TableCustomers from './TableCustomers';
 
 const data: StatCardProps[] = [
   {
@@ -118,7 +119,7 @@ export default function MainGrid() {
         <TabPanel value="3">Item Three</TabPanel>
         <TabPanel value="4">
           <PanelsForCustomers />
-          <TableSession />
+          <TableCustomers />
         </TabPanel>
       </TabContext>
     </Box>

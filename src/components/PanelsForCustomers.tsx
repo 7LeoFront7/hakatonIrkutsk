@@ -2,40 +2,29 @@ import * as React from 'react';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
+import Select from '@mui/material/Select';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import TextField from '@mui/material/TextField';
+import CustomDatePicker from './CustomDatePicker';
+import { useGetCustomers } from '../api/useGetCustomers';
 
 export default function SelectSmall() {
-  const [age, setAge] = React.useState('');
-  const [gpkz, setGpkz] = React.useState('');
-  const [dateStart, setDateStart] = React.useState<Date | null>(null);
-  const [dateEnd, setDateEnd] = React.useState<Date | null>(null);
-  const [kc, setKc] = React.useState('all'); // По умолчанию "Показать все"
-  const [city, setCity] = React.useState('');
+  // Инициализация состояния как объекта
+  const [customersListCs, setCustomersListCs] = React.useState({
+    kpgz: null,
+    customer: null,
+    cs: null,
+    dateStart: null,
+    dateEnd: null,
+    city: null,
+    kc: null, // По умолчанию "Показать все"
+  });
 
-  const handleChangeAge = (event: SelectChangeEvent) => {
-    setAge(event.target.value);
-  };
-
-  const handleChangeGpkz = (event: SelectChangeEvent) => {
-    setGpkz(event.target.value);
-  };
-
-  const handleChangeDateStart = (event: SelectChangeEvent) => {
-    setDateStart(event.target.value);
-  };
-
-  const handleChangeDateEnd = (event: SelectChangeEvent) => {
-    setDateEnd(event.target.value);
-  };
-
-  const handleChangeKc = (event: SelectChangeEvent) => {
-    setKc(event.target.value);
-  };
-
-  const handleChangeCity = (event: SelectChangeEvent) => {
-    setCity(event.target.value);
+  // Обработчик изменений для всех селектов
+  const handleChange = (field) => (event) => {
+    setCustomersListCs({
+      ...customersListCs,
+      [field]: event.target.value,
+    });
   };
 
   const kcHardData = {
@@ -47,30 +36,13 @@ export default function SelectSmall() {
   return (
     <LocalizationProvider>
       <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
-        <InputLabel id="demo-select-small-label">Заказчик</InputLabel>
+        <InputLabel id="customer-select-label">Заказчик</InputLabel>
         <Select
-          labelId="demo-select-small-customer"
-          id="demo-select-small-customer"
-          value={age}
+          labelId="customer-select"
+          id="customer-select"
+          value={customersListCs.customer}
           label="Заказчик"
-          onChange={handleChangeAge}
-        >
-          <MenuItem value="">
-            <em>None</em>
-          </MenuItem>
-          <MenuItem value={10}>Первый</MenuItem>
-          <MenuItem value={20}>Второй</MenuItem>
-          <MenuItem value={30}>Третий</MenuItem>
-        </Select>
-      </FormControl>
-      <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
-        <InputLabel id="demo-select-small-label">ГПКЗ</InputLabel>
-        <Select
-          labelId="demo-select-small-customer"
-          id="demo-select-small-customer"
-          value={gpkz}
-          label="Заказчик"
-          onChange={handleChangeGpkz}
+          onChange={handleChange('customer')}
         >
           <MenuItem value="">
             <em>None</em>
@@ -81,14 +53,15 @@ export default function SelectSmall() {
         </Select>
       </FormControl>
 
+      {/* Селект для ГПКЗ */}
       <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
-        <InputLabel id="demo-select-small-label">Дата от</InputLabel>
+        <InputLabel id="gpkz-select-label">ГПКЗ</InputLabel>
         <Select
-          labelId="demo-select-small-customer"
-          id="demo-select-small-customer"
-          value={dateStart}
-          label="Заказчик"
-          onChange={handleChangeDateStart}
+          labelId="gpkz-select"
+          id="gpkz-select"
+          value={customersListCs.kpgz}
+          label="ГПКЗ"
+          onChange={handleChange('kpgz')}
         >
           <MenuItem value="">
             <em>None</em>
@@ -98,31 +71,36 @@ export default function SelectSmall() {
           <MenuItem value={30}>Третий</MenuItem>
         </Select>
       </FormControl>
+
+      {/* Кастомные DatePicker для дат */}
       <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
-        <InputLabel id="demo-select-small-label">Дато До</InputLabel>
-        <Select
-          labelId="demo-select-small-customer"
-          id="demo-select-small-customer"
-          value={dateEnd}
-          label="Заказчик"
-          onChange={handleChangeDateEnd}
-        >
-          <MenuItem value="">
-            <em>None</em>
-          </MenuItem>
-          <MenuItem value={10}>Первый</MenuItem>
-          <MenuItem value={20}>Второй</MenuItem>
-          <MenuItem value={30}>Третий</MenuItem>
-        </Select>
+        <CustomDatePicker
+          label="Дата начала"
+          value={customersListCs.dateStart}
+          onChange={(date) =>
+            setCustomersListCs({ ...customersListCs, dateStart: date })
+          }
+        />
       </FormControl>
       <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
-        <InputLabel id="demo-select-small-label">Участник в КС</InputLabel>
+        <CustomDatePicker
+          label="Дата окончания"
+          value={customersListCs.dateEnd}
+          onChange={(date) =>
+            setCustomersListCs({ ...customersListCs, dateEnd: date })
+          }
+        />
+      </FormControl>
+
+      {/* Селект для участника в КС */}
+      <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+        <InputLabel id="kc-select-label">Участник в КС</InputLabel>
         <Select
-          labelId="demo-select-small-customer"
-          id="demo-select-small-customer"
-          value={kc}
-          label="Заказчик"
-          onChange={handleChangeKc}
+          labelId="kc-select"
+          id="kc-select"
+          value={customersListCs.kc}
+          label="Участник в КС"
+          onChange={handleChange('kc')}
         >
           {Object.entries(kcHardData).map(([key, value]) => (
             <MenuItem key={key} value={key}>
@@ -131,14 +109,16 @@ export default function SelectSmall() {
           ))}
         </Select>
       </FormControl>
+
+      {/* Селект для города */}
       <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
-        <InputLabel id="demo-select-small-label">Город</InputLabel>
+        <InputLabel id="city-select-label">Город</InputLabel>
         <Select
-          labelId="demo-select-small-customer"
-          id="demo-select-small-customer"
-          value={city}
-          label="Заказчик"
-          onChange={handleChangeCity}
+          labelId="city-select"
+          id="city-select"
+          value={customersListCs.city}
+          label="Город"
+          onChange={handleChange('city')}
         >
           <MenuItem value="">
             <em>None</em>

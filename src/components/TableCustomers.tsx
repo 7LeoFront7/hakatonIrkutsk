@@ -23,6 +23,7 @@ import { visuallyHidden } from '@mui/utils';
 import { useGetSessionsByInn } from '../api/useGetSessionsByInn';
 import { useMainContext } from '../context';
 import { useGetProviders } from '../api/useGetProviders';
+import { useGetCustomers } from '../api/useGetCustomers';
 
 interface Data {
   id: number;
@@ -51,21 +52,7 @@ function createData(
   };
 }
 
-const rows = [
-  createData(1, 'Cupcake', 305, 3.7, 67, 4.3),
-  createData(2, 'Donut', 452, 25.0, 51, 4.9),
-  createData(3, 'Eclair', 262, 16.0, 24, 6.0),
-  createData(4, 'Frozen yoghurt', 159, 6.0, 24, 4.0),
-  createData(5, 'Gingerbread', 356, 16.0, 49, 3.9),
-  createData(6, 'Honeycomb', 408, 3.2, 87, 6.5),
-  createData(7, 'Ice cream sandwich', 237, 9.0, 37, 4.3),
-  createData(8, 'Jelly Bean', 375, 0.0, 94, 0.0),
-  createData(9, 'KitKat', 518, 26.0, 65, 7.0),
-  createData(10, 'Lollipop', 392, 0.2, 98, 0.0),
-  createData(11, 'Marshmallow', 318, 0, 81, 2.0),
-  createData(12, 'Nougat', 360, 19.0, 9, 37.0),
-  createData(13, 'Oreo', 437, 18.0, 63, 4.0),
-];
+const rows = [];
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {
@@ -103,25 +90,37 @@ const headCells: readonly HeadCell[] = [
     id: 'name',
     numeric: false,
     disablePadding: true,
-    label: 'Все котировочные сессии (id)',
+    label: 'Все заказчики',
   },
   {
     id: 'calories',
     numeric: true,
     disablePadding: false,
-    label: 'Заказчик',
+    label: 'ГПКЗ',
   },
   {
     id: 'fat',
     numeric: true,
     disablePadding: false,
-    label: 'Победитель',
+    label: 'Дата начало КС',
   },
   {
     id: 'carbs',
     numeric: true,
     disablePadding: false,
-    label: 'Дата',
+    label: 'Дата окончания КС',
+  },
+  {
+    id: 'carbs',
+    numeric: true,
+    disablePadding: false,
+    label: 'Моё участие в КС',
+  },
+  {
+    id: 'carbs',
+    numeric: true,
+    disablePadding: false,
+    label: 'Регион заказчика',
   },
 ];
 
@@ -150,11 +149,9 @@ function EnhancedTableHead(props: EnhancedTableProps) {
     (property: keyof Data) => (event: React.MouseEvent<unknown>) => {
       onRequestSort(event, property);
     };
-  const { innState } = useMainContext();
-  const { data: currentInn, loading: loadingProviders } = useGetSessionsByInn(
-    innState?.inn
-  );
-  console.log('currentInn', currentInn, innState);
+
+  const { data: customers, loading: loadingCustomers } = useGetCustomers();
+
   return (
     <TableHead>
       <TableRow>
@@ -231,7 +228,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
           id="tableTitle"
           component="div"
         >
-          Список котировочных сессий
+          Список всех заказчиков
         </Typography>
       )}
       {numSelected > 0 ? (
@@ -258,8 +255,16 @@ export default function EnhancedTable() {
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
-  const { data: customers, loading: loadingCustomers } = useGetProviders();
-  console.log(customers, loadingCustomers);
+  const { data, loading: loadingCustomers } = useGetCustomers();
+  console.log(data);
+
+  Object.values(data).forEach((item) => {
+    console.log(item);
+    const customerName = item['Наименование заказчика'];
+    if (customerName) {
+      rows.push(createData(customerName, '0', '0', '0', '0', '0'));
+    }
+  });
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
