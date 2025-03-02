@@ -11,4 +11,7 @@ export const endpoints = {
   getDataCustomers: {
     path: '/customers',
   },
+  getParticipationYear: {
+    path: '/contracts_by_years',
+  },
 };

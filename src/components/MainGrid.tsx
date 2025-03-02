@@ -22,6 +22,7 @@ import { v4 as uuid } from 'uuid';
 import PanelsForCustomers from './PanelsForCustomers';
 import TableCustomers from './TableCustomers';
 import { useMainContext } from '../context';
+import { useGetParticipationYear } from '../api/useGetParticipationYear';
 
 const data: StatCardProps[] = [
   {
@@ -57,29 +58,6 @@ const data: StatCardProps[] = [
   },
 ];
 
-const draggableData = [
-  {
-    id: uuid(),
-    component: <StatCard {...data[0]} />,
-  },
-  {
-    id: uuid(),
-    component: <StatCard {...data[1]} />,
-  },
-  {
-    id: uuid(),
-    component: <StatCard {...data[2]} />,
-  },
-  {
-    id: uuid(),
-    component: <StartEndPriceChart />,
-  },
-  {
-    id: uuid(),
-    component: <PageViewsBarChart />,
-  },
-];
-
 function allyProps(index: number) {
   return {
     id: `simple-tab-${index}`,
@@ -106,8 +84,41 @@ const Portal = () => {
 };
 
 export default function MainGrid() {
+  const { tabs, currentTab, onSetCurrentTab, innState } = useMainContext();
+
+  const { data: dataParticipationYear } = useGetParticipationYear(
+    innState?.inn
+  );
+  const newData = {
+    title: 'Conversions',
+    value: dataParticipationYear.all_wins_count,
+    interval: 'По годам',
+    trend: 'down',
+    data: dataParticipationYear.data,
+  };
+  const draggableData = [
+    {
+      id: uuid(),
+      component: <StatCard {...newData} />,
+    },
+    {
+      id: uuid(),
+      component: <StatCard {...data[1]} />,
+    },
+    {
+      id: uuid(),
+      component: <StatCard {...data[2]} />,
+    },
+    {
+      id: uuid(),
+      component: <StartEndPriceChart />,
+    },
+    {
+      id: uuid(),
+      component: <PageViewsBarChart />,
+    },
+  ];
   const [items, setItems] = useState(draggableData);
-  const { tabs, currentTab, onSetCurrentTab } = useMainContext();
 
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
     onSetCurrentTab(newValue);
@@ -149,7 +160,7 @@ export default function MainGrid() {
               {el.id === 0 && (
                 <>
                   <Typography component="h2" variant="h6" sx={{ mb: 2 }}>
-                    Overview
+                    Обзор
                   </Typography>
                   <DragDropContext onDragEnd={onEndContext}>
                     <Droppable
