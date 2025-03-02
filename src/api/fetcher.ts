@@ -1,6 +1,6 @@
 import axios, { AxiosRequestConfig } from 'axios';
 
-const HOST_API = 'https://raketa-back2.ru.tuna.am';
+const HOST_API = 'https://raketa-back.ru.tuna.am';
 
 const axiosInstance = axios.create({ baseURL: HOST_API });
 

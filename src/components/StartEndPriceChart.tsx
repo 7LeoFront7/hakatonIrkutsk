@@ -38,8 +38,6 @@ export default function StartEndPriceChart() {
     theme.palette.primary.dark,
   ];
 
-  console.log('data', dataAsis);
-
   return (
     <Card variant="outlined" sx={{ width: '100%' }}>
       <CardContent>

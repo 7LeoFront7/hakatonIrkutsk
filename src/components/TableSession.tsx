@@ -154,7 +154,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
   const { data: currentInn, loading: loadingProviders } = useGetSessionsByInn(
     innState?.inn
   );
-  console.log('currentInn', currentInn, innState);
+
   return (
     <TableHead>
       <TableRow>
@@ -259,7 +259,6 @@ export default function EnhancedTable() {
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
   const { data: customers, loading: loadingCustomers } = useGetProviders();
-  console.log(customers, loadingCustomers);
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
