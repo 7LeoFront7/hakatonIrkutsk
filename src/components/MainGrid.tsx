@@ -21,6 +21,25 @@ import StartEndPriceChart from './StartEndPriceChart';
 import { v4 as uuid } from 'uuid';
 import PanelsForCustomers from './PanelsForCustomers';
 import TableCustomers from './TableCustomers';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
+import Button from '@mui/material/Button';
+
+const generatePdf = () => {
+  const input = document.getElementById('tab1-content'); // Убедитесь, что у вас есть id для содержимого таба
+
+  if (input) {
+    html2canvas(input).then((canvas) => {
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4'); // A4 размер, портретная ориентация
+      const imgWidth = 210; // Ширина A4 в мм
+      const imgHeight = (canvas.height * imgWidth) / canvas.width; // Масштабируем высоту
+
+      pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+      pdf.save('report.pdf'); // Сохраняем PDF
+    });
+  }
+};
 
 const data: StatCardProps[] = [
   {
@@ -108,7 +127,7 @@ export default function MainGrid() {
             <Tab label="Заказчик" value="4" />
           </TabList>
         </Box>
-        <TabPanel value="1">
+        <TabPanel id="tab1-content" value="1">
           <Typography component="h2" variant="h6" sx={{ mb: 2 }}>
             Overview
           </Typography>
@@ -165,6 +184,9 @@ export default function MainGrid() {
               </Stack>
             </Grid>
           </Grid>
+          <Button variant="contained" onClick={generatePdf} sx={{ mt: 2 }}>
+            Скачать отчёт в PDF
+          </Button>
           <Copyright sx={{ my: 4 }} />
         </TabPanel>
         <TabPanel value="2">
