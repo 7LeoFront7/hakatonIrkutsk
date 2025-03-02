@@ -37,7 +37,7 @@ function renderRow(props: ListChildComponentProps) {
       noWrap
       style={inlineStyle}
     >
-      {`${dataSet[1].name} (ИНН: ${dataSet[1].inn})`}
+      {`${dataSet[1].name} (ИНН:${dataSet[1].inn}) ${dataSet[1].region}`}
     </Typography>
   );
 }
