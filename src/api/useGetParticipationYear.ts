@@ -24,14 +24,14 @@ export function useGetParticipationYear(inn) {
     if (data) {
       const dataAsis = data.data.map((el) => el.year);
       const dataPartsCount = data.data.map((el) => el.parts_count);
-      const dataKwinsCount = data.data.map((el) => el.kwins_count);
+      const dataWinsCount = data.data.map((el) => el.wins_count);
       return {
         data: data?.data || [],
         all_wins_count: data.summary?.all_wins_count,
         all_wins_percentage: data.summary?.all_wins_percentage,
         dataAsis,
         dataPartsCount,
-        dataKwinsCount,
+        dataWinsCount,
         loading: isLoading,
         validating: isValidating,
         error,
@@ -43,7 +43,7 @@ export function useGetParticipationYear(inn) {
       all_wins_percentage: 0,
       dataAsis: [],
       dataPartsCount: [],
-      dataKwinsCount: [],
+      dataWinsCount: [],
       loading: isLoading,
       validating: isValidating,
       error,

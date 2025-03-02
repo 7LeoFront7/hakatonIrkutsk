@@ -16,7 +16,7 @@ export default function PageViewsBarChart() {
     all_wins_count,
     all_wins_percentage,
     dataAsis,
-    dataKwinsCount,
+    dataWinsCount,
     dataPartsCount,
   } = useGetParticipationYear(innState?.inn);
   const theme = useTheme();
@@ -70,7 +70,7 @@ export default function PageViewsBarChart() {
             {
               id: 'downloads',
               label: 'Количество побед',
-              data: dataKwinsCount,
+              data: dataWinsCount,
               stack: 'A',
             },
           ]}
