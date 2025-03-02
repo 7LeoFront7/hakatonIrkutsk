@@ -25,6 +25,7 @@ import { useMainContext } from '../context';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import Button from '@mui/material/Button';
+import TableConcurents from './TableConcurents';
 
 const generatePdf = () => {
   const input = document.getElementById('tab1-content'); // Убедитесь, что у вас есть id для содержимого таба
@@ -241,7 +242,7 @@ export default function MainGrid() {
           <Copyright sx={{ my: 4 }} />
         </TabPanel>
         <TabPanel value="2">
-          <TableSession />
+          <TableConcurents />
         </TabPanel>
         <TabPanel value="3">
           <PanelsForCustomers />

@@ -22,6 +22,10 @@ import FilterListIcon from '@mui/icons-material/FilterList';
 import { visuallyHidden } from '@mui/utils';
 import { useGetCustomers } from '../api/useGetCustomers';
 import { useMainContext } from '../context';
+import FormControl from '@mui/material/FormControl';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
 
 interface Data {
   id: number;
@@ -417,6 +421,41 @@ export default function EnhancedTable() {
         control={<Switch checked={dense} onChange={handleChangeDense} />}
         label="Dense padding"
       />
+      <FormControl>
+        <InputLabel id="demo-simple-select-label">X</InputLabel>
+        <Select
+          labelId="demo-simple-select-label"
+          id="demo-simple-select"
+          value="dsadas"
+          label="х"
+          sx={{ width: '100px', marginRight: '20px' }}
+        >
+          <MenuItem value={10}>Дата окончания КС</MenuItem>
+          <MenuItem value={20}>Сумма КС</MenuItem>
+          <MenuItem value={30}>...</MenuItem>
+          <MenuItem value={30}>...</MenuItem>
+          <MenuItem value={30}>...</MenuItem>
+          <MenuItem value={20}>Регион</MenuItem>
+        </Select>
+      </FormControl>
+
+      <FormControl>
+        <InputLabel id="demo-simple-select-label">Y</InputLabel>
+        <Select
+          sx={{ width: '100px', marginRight: '20px' }}
+          labelId="demo-simple-select-label"
+          id="demo-simple-select"
+          value="dsadas"
+          label="у"
+        >
+          <MenuItem value={10}>Дата окончания КС</MenuItem>
+          <MenuItem value={20}>Сумма КС</MenuItem>
+          <MenuItem value={30}>...</MenuItem>
+          <MenuItem value={30}>...</MenuItem>
+          <MenuItem value={30}>...</MenuItem>
+          <MenuItem value={20}>Регион</MenuItem>
+        </Select>
+      </FormControl>
     </Box>
   );
 }

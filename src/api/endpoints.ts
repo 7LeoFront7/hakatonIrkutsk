@@ -11,4 +11,7 @@ export const endpoints = {
   getDataCustomers: {
     path: '/customers',
   },
+  getDataCompetitorsByInn: {
+    path: '/competitors',
+  },
 };

@@ -119,6 +119,40 @@ export default function SelectSmall() {
         </Select>
       </FormControl>
 
+      <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+        <InputLabel id="kc-select-label">Мин. Сумма</InputLabel>
+        <Select
+          labelId="kc-select"
+          id="kc-select"
+          value={customersListCs.kc}
+          label="Мин. Сумма"
+          onChange={handleChange('kc')}
+        >
+          {Object.entries(kcHardData).map(([key, value]) => (
+            <MenuItem key={key} value={key}>
+              {value}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+
+      <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+        <InputLabel id="kc-select-label">Макс. Сумма</InputLabel>
+        <Select
+          labelId="kc-select"
+          id="kc-select"
+          value={customersListCs.kc}
+          label="Макс. Сумма"
+          onChange={handleChange('kc')}
+        >
+          {Object.entries(kcHardData).map(([key, value]) => (
+            <MenuItem key={key} value={key}>
+              {value}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+
       {/* Селект для города */}
       <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
         <InputLabel id="city-select-label">Город</InputLabel>
