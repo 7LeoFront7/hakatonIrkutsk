@@ -6,8 +6,19 @@ import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
 import { BarChart } from '@mui/x-charts/BarChart';
 import { useTheme } from '@mui/material/styles';
+import { useMainContext } from '../context';
+import { useGetParticipationYear } from '../api/useGetParticipationYear';
 
 export default function PageViewsBarChart() {
+  const { innState } = useMainContext();
+  const {
+    data: dataParticipationYear,
+    all_wins_count,
+    all_wins_percentage,
+    dataAsis,
+    dataEndPrice,
+    dataStartPrice,
+  } = useGetParticipationYear(innState?.inn);
   const theme = useTheme();
   const colorPalette = [
     (theme.vars || theme).palette.primary.dark,
@@ -18,7 +29,7 @@ export default function PageViewsBarChart() {
     <Card variant="outlined" sx={{ width: '100%' }}>
       <CardContent>
         <Typography component="h2" variant="subtitle2" gutterBottom>
-          Page views and downloads
+          Количество контрактов по годам
         </Typography>
         <Stack sx={{ justifyContent: 'space-between' }}>
           <Stack
@@ -30,12 +41,12 @@ export default function PageViewsBarChart() {
             }}
           >
             <Typography variant="h4" component="p">
-              1.3M
+              {all_wins_count}
             </Typography>
-            <Chip size="small" color="error" label="-8%" />
+            <Chip size="small" color="error" label={all_wins_percentage} />
           </Stack>
           <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-            Page views and downloads for the last 6 months
+            Количество контрактов по годам за последние 10 лет
           </Typography>
         </Stack>
         <BarChart
@@ -45,28 +56,21 @@ export default function PageViewsBarChart() {
             [
               {
                 scaleType: 'band',
-                categoryGapRatio: 0.5,
-                data: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+                data: dataAsis,
               },
             ] as any
           }
           series={[
             {
               id: 'page-views',
-              label: 'Page views',
-              data: [2234, 3872, 2998, 4125, 3357, 2789, 2998],
+              label: 'Start Price',
+              data: dataStartPrice,
               stack: 'A',
             },
             {
               id: 'downloads',
-              label: 'Downloads',
-              data: [3098, 4215, 2384, 2101, 4752, 3593, 2384],
-              stack: 'A',
-            },
-            {
-              id: 'conversions',
-              label: 'Conversions',
-              data: [4051, 2275, 3129, 4693, 3904, 2038, 2275],
+              label: 'End Price',
+              data: dataEndPrice,
               stack: 'A',
             },
           ]}

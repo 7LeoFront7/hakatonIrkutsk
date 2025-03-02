@@ -22,13 +22,18 @@ import { v4 as uuid } from 'uuid';
 import PanelsForCustomers from './PanelsForCustomers';
 import TableCustomers from './TableCustomers';
 import { useMainContext } from '../context';
+import { useGetParticipationYear } from '../api/useGetParticipationYear';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import Button from '@mui/material/Button';
 import TableConcurents from './TableConcurents';
 
-const generatePdf = () => {
-  const input = document.getElementById('tab1-content'); // Убедитесь, что у вас есть id для содержимого таба
+const generatePdf = (id) => {
+  const input = document.getElementById(`custom-tab-panel-${id}`); // Убедитесь, что у вас есть id для содержимого таба
+  if (!input) {
+    console.error('Element with id "custom-tab-panel" not found');
+    return;
+  }
 
   if (input) {
     html2canvas(input).then((canvas) => {
@@ -77,29 +82,6 @@ const data: StatCardProps[] = [
   },
 ];
 
-const draggableData = [
-  {
-    id: uuid(),
-    component: <StatCard {...data[0]} />,
-  },
-  {
-    id: uuid(),
-    component: <StatCard {...data[1]} />,
-  },
-  {
-    id: uuid(),
-    component: <StatCard {...data[2]} />,
-  },
-  {
-    id: uuid(),
-    component: <StartEndPriceChart />,
-  },
-  {
-    id: uuid(),
-    component: <PageViewsBarChart />,
-  },
-];
-
 function allyProps(index: number) {
   return {
     id: `simple-tab-${index}`,
@@ -107,15 +89,25 @@ function allyProps(index: number) {
   };
 }
 
-const CustomTabPanel = ({ children, el }) => {
+const CustomTabPanel = ({ children, el, ...other }) => {
   if (children)
     return (
-      <TabPanel key={String(el.id)} value={String(el.id)}>
+      <TabPanel
+        key={String(el.id)}
+        value={String(el.id)}
+        id={`custom-tab-panel-${el.id}`}
+        {...other}
+      >
         {children}
       </TabPanel>
     );
   return (
-    <TabPanel key={String(el.id)} value={String(el.id)}>
+    <TabPanel
+      key={String(el.id)}
+      value={String(el.id)}
+      id={`custom-tab-panel-${el.id}`}
+      {...other}
+    >
       {el.id}
     </TabPanel>
   );
@@ -126,8 +118,22 @@ const Portal = () => {
 };
 
 export default function MainGrid() {
+  const { tabs, currentTab, onSetCurrentTab, innState } = useMainContext();
+  const { data: dataParticipationYear } = useGetParticipationYear(
+    innState?.inn
+  );
+
+  const draggableData = [
+    {
+      id: uuid(),
+      component: <StartEndPriceChart />,
+    },
+    {
+      id: uuid(),
+      component: <PageViewsBarChart />,
+    },
+  ];
   const [items, setItems] = useState(draggableData);
-  const { tabs, currentTab, onSetCurrentTab } = useMainContext();
 
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
     onSetCurrentTab(newValue);
@@ -163,24 +169,19 @@ export default function MainGrid() {
             ))}
           </Tabs>
         </Box>
-        <TabPanel value="1">
-          <Typography component="h2" variant="h6" sx={{ mb: 2 }}>
-            Overview
-          </Typography>
-          <DragDropContext onDragEnd={onEndContext}>
-            <Droppable droppableId="mainContainer" direction="horizontal">
-              {(provided) => (
-                <Grid
-                  ref={provided.innerRef}
-                  {...provided.draggableProps}
-                  {...provided.dragHandleProps}
-                  container
-                  spacing={2}
-                  columns={12}
-                  sx={{ mb: (theme) => theme.spacing(2) }}
-                >
-                  {items.map((el, index) => (
-                    <Draggable key={el.id} draggableId={el.id} index={index}>
+        {tabs.map((el) => {
+          return (
+            <CustomTabPanel el={el}>
+              {el.id === 0 && (
+                <>
+                  <Typography component="h2" variant="h6" sx={{ mb: 2 }}>
+                    Обзор
+                  </Typography>
+                  <DragDropContext onDragEnd={onEndContext}>
+                    <Droppable
+                      droppableId="mainContainer"
+                      direction="horizontal"
+                    >
                       {(provided) => (
                         <Grid
                           ref={provided.innerRef}
@@ -216,39 +217,29 @@ export default function MainGrid() {
                           {provided.placeholder}
                         </Grid>
                       )}
-                    </Draggable>
-                  ))}
-                </Grid>
+                    </Droppable>
+                  </DragDropContext>
+
+                  <Copyright sx={{ my: 4 }} />
+                </>
               )}
-            </Droppable>
-          </DragDropContext>
-          <Typography component="h2" variant="h6" sx={{ mb: 2 }}>
-            Details
-          </Typography>
-          <Grid container spacing={2} columns={12}>
-            <Grid size={{ xs: 12, lg: 9 }}>
-              <CustomizedDataGrid />
-            </Grid>
-            <Grid size={{ xs: 12, lg: 3 }}>
-              <Stack
-                gap={2}
-                direction={{ xs: 'column', sm: 'row', lg: 'column' }}
-              >
-                <CustomizedTreeView />
-                <ChartUserByCountry />
-              </Stack>
-            </Grid>
-          </Grid>
-          <Copyright sx={{ my: 4 }} />
-        </TabPanel>
-        <TabPanel value="2">
-          <TableConcurents />
-        </TabPanel>
-        <TabPanel value="3">
-          <PanelsForCustomers />
-          <TableCustomers />
-        </TabPanel>
+              {el.id === 1 && <TableSession />}
+              {el.id === 2 && 'Item Three'}
+              {el.id === 3 && (
+                <>
+                  <PanelsForCustomers />
+                  <TableCustomers />
+                </>
+              )}
+              {el.id > 3 && <Portal></Portal>}
+            </CustomTabPanel>
+          );
+        })}
       </TabContext>
+
+      <Button variant="contained" onClick={() => generatePdf(currentTab)}>
+        Export PDF
+      </Button>
     </Box>
   );
 }

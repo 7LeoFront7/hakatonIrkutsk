@@ -13,5 +13,7 @@ export const endpoints = {
   },
   getDataCompetitorsByInn: {
     path: '/competitors',
+  getParticipationYear: {
+    path: '/contracts_by_years',
   },
 };
