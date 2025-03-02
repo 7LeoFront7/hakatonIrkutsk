@@ -8,4 +8,7 @@ export const endpoints = {
   getDataStartEndPrice: {
     path: '/wins_dots',
   },
+  getDataCustomers: {
+    path: '/customers',
+  },
 };

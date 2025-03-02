@@ -19,6 +19,8 @@ import StatCard, { StatCardProps } from './StatCard';
 import TableSession from '../components/TableSession';
 import StartEndPriceChart from './StartEndPriceChart';
 import { v4 as uuid } from 'uuid';
+import PanelsForCustomers from './PanelsForCustomers';
+import TableCustomers from './TableCustomers';
 
 const data: StatCardProps[] = [
   {
@@ -103,6 +105,7 @@ export default function MainGrid() {
             <Tab label="Главная" value="1" />
             <Tab label="Сессии КС" value="2" />
             <Tab label="Конкуренты" value="3" />
+            <Tab label="Заказчик" value="4" />
           </TabList>
         </Box>
         <TabPanel value="1">
@@ -168,6 +171,10 @@ export default function MainGrid() {
           <TableSession />
         </TabPanel>
         <TabPanel value="3">Item Three</TabPanel>
+        <TabPanel value="4">
+          <PanelsForCustomers />
+          <TableCustomers />
+        </TabPanel>
       </TabContext>
     </Box>
   );
