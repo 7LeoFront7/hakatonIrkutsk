@@ -1,3 +1,5 @@
+import { useState } from 'react';
+import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import Grid from '@mui/material/Grid2';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
@@ -13,10 +15,10 @@ import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
 import React from 'react';
-import SessionsChart from './SessionsChart';
 import StatCard, { StatCardProps } from './StatCard';
 import TableSession from '../components/TableSession';
 import StartEndPriceChart from './StartEndPriceChart';
+import { v4 as uuid } from 'uuid';
 import PanelsForCustomers from './PanelsForCustomers';
 import TableCustomers from './TableCustomers';
 
@@ -54,13 +56,47 @@ const data: StatCardProps[] = [
   },
 ];
 
+const draggableData = [
+  {
+    id: uuid(),
+    component: <StatCard {...data[0]} />,
+  },
+  {
+    id: uuid(),
+    component: <StatCard {...data[1]} />,
+  },
+  {
+    id: uuid(),
+    component: <StatCard {...data[2]} />,
+  },
+  {
+    id: uuid(),
+    component: <StartEndPriceChart />,
+  },
+  {
+    id: uuid(),
+    component: <PageViewsBarChart />,
+  },
+];
+
 export default function MainGrid() {
+  const [items, setItems] = useState(draggableData);
   const [value, setValue] = React.useState('1');
 
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
     setValue(newValue);
   };
 
+  const onEndContext = (result) => {
+    const { source, destination } = result;
+    if (!destination) return;
+
+    const reorderedItems = Array.from(items);
+    const [movedItem] = reorderedItems.splice(source.index, 1);
+    reorderedItems.splice(destination.index, 0, movedItem);
+
+    setItems(reorderedItems);
+  };
   return (
     <Box sx={{ width: '100%', maxWidth: { sm: '100%', md: '1700px' } }}>
       <TabContext value={value}>
@@ -76,24 +112,42 @@ export default function MainGrid() {
           <Typography component="h2" variant="h6" sx={{ mb: 2 }}>
             Overview
           </Typography>
-          <Grid
-            container
-            spacing={2}
-            columns={12}
-            sx={{ mb: (theme) => theme.spacing(2) }}
-          >
-            {data.map((card, index) => (
-              <Grid key={index} size={{ xs: 12, sm: 6, lg: 3 }}>
-                <StatCard {...card} />
-              </Grid>
-            ))}
-            <Grid size={{ xs: 12, md: 6 }}>
-              <StartEndPriceChart />
-            </Grid>
-            <Grid size={{ xs: 12, md: 6 }}>
-              <PageViewsBarChart />
-            </Grid>
-          </Grid>
+          <DragDropContext onDragEnd={onEndContext}>
+            <Droppable droppableId="mainContainer" direction="horizontal">
+              {(provided) => (
+                <Grid
+                  ref={provided.innerRef}
+                  {...provided.draggableProps}
+                  {...provided.dragHandleProps}
+                  container
+                  spacing={2}
+                  columns={12}
+                  sx={{ mb: (theme) => theme.spacing(2) }}
+                >
+                  {items.map((el, index) => (
+                    <Draggable key={el.id} draggableId={el.id} index={index}>
+                      {(provided) => (
+                        <Grid
+                          size={
+                            index < 3
+                              ? { xs: 12, sm: 6, lg: 3 }
+                              : { xs: 12, md: 6 }
+                          }
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                        >
+                          {el.component}
+                        </Grid>
+                      )}
+                    </Draggable>
+                  ))}
+                  {provided.placeholder}
+                </Grid>
+              )}
+            </Droppable>
+          </DragDropContext>
+
           <Typography component="h2" variant="h6" sx={{ mb: 2 }}>
             Details
           </Typography>
