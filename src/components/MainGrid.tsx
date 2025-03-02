@@ -21,6 +21,7 @@ import StartEndPriceChart from './StartEndPriceChart';
 import { v4 as uuid } from 'uuid';
 import PanelsForCustomers from './PanelsForCustomers';
 import TableCustomers from './TableCustomers';
+import { useMainContext } from '../context';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import Button from '@mui/material/Button';
@@ -98,12 +99,37 @@ const draggableData = [
   },
 ];
 
+function allyProps(index: number) {
+  return {
+    id: `simple-tab-${index}`,
+    'aria-controls': `simple-tabpanel-${index}`,
+  };
+}
+
+const CustomTabPanel = ({ children, el }) => {
+  if (children)
+    return (
+      <TabPanel key={String(el.id)} value={String(el.id)}>
+        {children}
+      </TabPanel>
+    );
+  return (
+    <TabPanel key={String(el.id)} value={String(el.id)}>
+      {el.id}
+    </TabPanel>
+  );
+};
+
+const Portal = () => {
+  return <div>set</div>;
+};
+
 export default function MainGrid() {
   const [items, setItems] = useState(draggableData);
-  const [value, setValue] = React.useState('1');
+  const { tabs, currentTab, onSetCurrentTab } = useMainContext();
 
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
-    setValue(newValue);
+    onSetCurrentTab(newValue);
   };
 
   const onEndContext = (result) => {
@@ -116,18 +142,27 @@ export default function MainGrid() {
 
     setItems(reorderedItems);
   };
+
   return (
     <Box sx={{ width: '100%', maxWidth: { sm: '100%', md: '1700px' } }}>
-      <TabContext value={value}>
+      <TabContext value={currentTab}>
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-          <TabList onChange={handleChange} aria-label="lab API tabs example">
-            <Tab label="Главная" value="1" />
-            <Tab label="Сессии КС" value="2" />
-            <Tab label="Конкуренты" value="3" />
-            <Tab label="Заказчик" value="4" />
-          </TabList>
+          <Tabs
+            value={currentTab}
+            onChange={handleChange}
+            aria-label="lab API tabs example"
+          >
+            {tabs.map((el) => (
+              <Tab
+                key={String(el.id)}
+                label={el.label}
+                {...allyProps(el.id)}
+                v
+              />
+            ))}
+          </Tabs>
         </Box>
-        <TabPanel id="tab1-content" value="1">
+        <TabPanel value="1">
           <Typography component="h2" variant="h6" sx={{ mb: 2 }}>
             Overview
           </Typography>
@@ -147,22 +182,61 @@ export default function MainGrid() {
                     <Draggable key={el.id} draggableId={el.id} index={index}>
                       {(provided) => (
                         <Grid
-                          size={
-                            index < 3
-                              ? { xs: 12, sm: 6, lg: 3 }
-                              : { xs: 12, md: 6 }
-                          }
                           ref={provided.innerRef}
                           {...provided.draggableProps}
                           {...provided.dragHandleProps}
+                          container
+                          spacing={2}
+                          columns={12}
+                          sx={{ mb: (theme) => theme.spacing(2) }}
                         >
-                          {el.component}
+                          {items.map((el, index) => (
+                            <Draggable
+                              key={el.id}
+                              draggableId={el.id}
+                              index={index}
+                            >
+                              {(provided) => (
+                                <Grid
+                                  size={
+                                    index < 3
+                                      ? { xs: 12, sm: 6, lg: 3 }
+                                      : { xs: 12, md: 6 }
+                                  }
+                                  ref={provided.innerRef}
+                                  {...provided.draggableProps}
+                                  {...provided.dragHandleProps}
+                                >
+                                  {el.component}
+                                </Grid>
+                              )}
+                            </Draggable>
+                          ))}
+                          {provided.placeholder}
                         </Grid>
                       )}
-                    </Draggable>
-                  ))}
-                  {provided.placeholder}
-                </Grid>
+                    </Droppable>
+                  </DragDropContext>
+
+                  <Typography component="h2" variant="h6" sx={{ mb: 2 }}>
+                    Details
+                  </Typography>
+                  <Grid container spacing={2} columns={12}>
+                    <Grid size={{ xs: 12, lg: 9 }}>
+                      <CustomizedDataGrid />
+                    </Grid>
+                    <Grid size={{ xs: 12, lg: 3 }}>
+                      <Stack
+                        gap={2}
+                        direction={{ xs: 'column', sm: 'row', lg: 'column' }}
+                      >
+                        <CustomizedTreeView />
+                        <ChartUserByCountry />
+                      </Stack>
+                    </Grid>
+                  </Grid>
+                  <Copyright sx={{ my: 4 }} />
+                </>
               )}
             </Droppable>
           </DragDropContext>
@@ -184,9 +258,6 @@ export default function MainGrid() {
               </Stack>
             </Grid>
           </Grid>
-          <Button variant="contained" onClick={generatePdf} sx={{ mt: 2 }}>
-            Скачать отчёт в PDF
-          </Button>
           <Copyright sx={{ my: 4 }} />
         </TabPanel>
         <TabPanel value="2">

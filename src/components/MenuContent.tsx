@@ -5,20 +5,20 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Stack from '@mui/material/Stack';
-import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
-import AnalyticsRoundedIcon from '@mui/icons-material/AnalyticsRounded';
-import PeopleRoundedIcon from '@mui/icons-material/PeopleRounded';
-import AssignmentRoundedIcon from '@mui/icons-material/AssignmentRounded';
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
 import InfoRoundedIcon from '@mui/icons-material/InfoRounded';
 import HelpRoundedIcon from '@mui/icons-material/HelpRounded';
+import AddRoundedIcon from '@mui/icons-material/AddRounded';
+import { TextField } from '@mui/material';
+import { useMainContext } from '../context';
+import DashboardCustomizeRoundedIcon from '@mui/icons-material/DashboardCustomizeRounded';
 
-const mainListItems = [
-  { text: 'Home', icon: <HomeRoundedIcon /> },
-  { text: 'Analytics', icon: <AnalyticsRoundedIcon /> },
-  { text: 'Clients', icon: <PeopleRoundedIcon /> },
-  { text: 'Tasks', icon: <AssignmentRoundedIcon /> },
-];
+interface TabData {
+  id: number;
+  label: string;
+  icon: ReactSVGElement;
+  content: string;
+}
 
 const secondaryListItems = [
   { text: 'Settings', icon: <SettingsRoundedIcon /> },
@@ -27,17 +27,54 @@ const secondaryListItems = [
 ];
 
 export default function MenuContent() {
+  const [newTabLabel, setNewTabLabel] = React.useState('');
+  const { tabs, onSetTabs, onSetCurrentTab } = useMainContext();
+  const handleChange = (e) => setNewTabLabel(e.target.value);
+  const addTab = () => {
+    if (newTabLabel.trim()) {
+      const newTab: TabData = {
+        id: tabs.length,
+        label: newTabLabel,
+        icon: <DashboardCustomizeRoundedIcon />,
+        content: `Content for ${newTabLabel}`,
+      };
+      onSetTabs(newTab);
+      setNewTabLabel('');
+    }
+  };
+
+  const handleClick = (value) => {
+    const strValue = String(value);
+    onSetCurrentTab(strValue);
+  };
+
   return (
     <Stack sx={{ flexGrow: 1, p: 1, justifyContent: 'space-between' }}>
       <List dense>
-        {mainListItems.map((item, index) => (
+        {tabs.map((item, index) => (
           <ListItem key={index} disablePadding sx={{ display: 'block' }}>
-            <ListItemButton selected={index === 0}>
+            <ListItemButton
+              onClick={() => handleClick(index)}
+              selected={index === tabs.id}
+            >
               <ListItemIcon>{item.icon}</ListItemIcon>
-              <ListItemText primary={item.text} />
+              <ListItemText primary={item.label} />
             </ListItemButton>
           </ListItem>
         ))}
+        <ListItem disablePadding sx={{ display: 'flex', alignItems: 'center' }}>
+          <ListItemButton sx={{ p: 9 }} onClick={addTab}>
+            <ListItemIcon>
+              <AddRoundedIcon />
+            </ListItemIcon>
+          </ListItemButton>
+          <TextField
+            size="small"
+            value={newTabLabel}
+            onChange={handleChange}
+            placeholder="Добавить дашбоард"
+          />
+        </ListItem>
       </List>
       <List dense>
         {secondaryListItems.map((item, index) => (

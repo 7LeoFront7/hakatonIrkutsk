@@ -7,6 +7,7 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import MenuContent from './MenuContent';
 import OptionsMenu from './OptionsMenu';
+import { useMainContext } from '../context';
 
 const drawerWidth = 240;
 
@@ -22,6 +23,7 @@ const Drawer = styled(MuiDrawer)({
 });
 
 export default function SideMenu() {
+  const { innState } = useMainContext();
   return (
     <Drawer
       variant="permanent"
@@ -71,10 +73,10 @@ export default function SideMenu() {
             variant="body2"
             sx={{ fontWeight: 500, lineHeight: '16px' }}
           >
-            Riley Carter
+            {innState?.name}
           </Typography>
           <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-            riley@email.com
+            {innState?.region}
           </Typography>
         </Box>
         <OptionsMenu />
