@@ -224,7 +224,7 @@ export default function MainGrid() {
                 </>
               )}
               {el.id === 1 && <TableSession />}
-              {el.id === 2 && 'Item Three'}
+              {el.id === 2 && <TableConcurents />}
               {el.id === 3 && (
                 <>
                   <PanelsForCustomers />

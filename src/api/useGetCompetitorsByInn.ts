@@ -9,7 +9,7 @@ const options = {
   revalidateOnReconnect: false,
 };
 
-const URL = `${endpoints.getDataCompetitorsByInn}`;
+const URL = `${endpoints.getDataCompetitorsByInn.path}`;
 
 export function useGetCompetitorsByInn(inn) {
   const url = inn ? `${URL}` : null;

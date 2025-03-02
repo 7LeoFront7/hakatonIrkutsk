@@ -20,9 +20,8 @@ import Switch from '@mui/material/Switch';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import { visuallyHidden } from '@mui/utils';
-import { useGetCustomers } from '../api/useGetCustomers';
-import { useMainContext } from '../context';
 import { useGetCompetitorsByInn } from '../api/useGetCompetitorsByInn';
+import { useMainContext } from '../context';
 
 interface Data {
   id: number;
@@ -95,25 +94,25 @@ const headCells: readonly HeadCell[] = [
     id: 'calories',
     numeric: true,
     disablePadding: false,
-    label: 'ГПКЗ',
+    label: 'КПГЗ',
   },
   {
     id: 'fat',
     numeric: true,
     disablePadding: false,
-    label: 'Дата начало КС',
+    label: 'Кол-во общих КС',
   },
   {
     id: 'carbs',
     numeric: true,
     disablePadding: false,
-    label: 'Дата окончания КС',
+    label: 'Победы конкурента',
   },
   {
     id: 'protein',
     numeric: true,
     disablePadding: false,
-    label: 'Регион заказчика',
+    label: 'Мои победы',
   },
 ];
 
@@ -250,21 +249,28 @@ export default function EnhancedTable() {
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [rows, setRows] = React.useState<Data[]>(initialRows);
 
-  const { data, loading: loadingCustomers } = useGetCustomers();
+  const { innState } = useMainContext();
+
+  const { data, loading: loadingCustomers } = useGetCompetitorsByInn(
+    innState.inn
+  );
 
   React.useEffect(() => {
     if (data && !loadingCustomers) {
-      // Извлекаем массив first100 из data
-      const first100 = data.first100 || [];
-      // Преобразуем массив first100 в строки таблицы
-      const newRows = first100.map((item, index) =>
+      // Извлекаем массив competitors из data
+      const competitors = data.competitors || [];
+      // Преобразуем массив competitors в строки таблицы
+      const newRows = competitors.map((item, index) =>
         createData(
           index + 1, // id
-          item['Наименование конкурента'] || 'Нет данных', // name
-          item['Наименование КПГЗ'] || 'Нет данных', // name
-          item['Начало КС'].slice(0, 10) || 'Нет данных',
-          item['Окончание КС'].slice(0, 10) || 'Нет данных',
-          item['Регион заказчика'] || 'Нет данных'
+          `${item['competitor_name']} ${item['competitor_inn']} ${item['competitor_region']}` ||
+            'Нет данных', // name
+          item['kpgz_info'] || 'Нет данных', // name
+          item['total_contracts'] || 'Нет данных', // name
+          `${item['competitor_wins']} / ${item['competitor_win_percentage']}%` ||
+            'Нет данных', // name
+          `${item['supplier_wins']} / ${item['supplier_win_percentage']}%` ||
+            'Нет данных' // name
         )
       );
       setRows(newRows);
@@ -333,12 +339,6 @@ export default function EnhancedTable() {
         .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
     [order, orderBy, page, rowsPerPage, rows]
   );
-
-  const { innState } = useMainContext();
-  const { data: Competitors, loading: loadingProviders } =
-    useGetCompetitorsByInn(innState?.inn);
-
-  console.log(Competitors);
 
   return (
     <Box sx={{ width: '100%' }}>

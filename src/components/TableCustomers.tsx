@@ -26,6 +26,7 @@ import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
+import { Button } from '@mui/material';
 
 interface Data {
   id: number;
@@ -438,15 +439,14 @@ export default function EnhancedTable() {
           <MenuItem value={20}>Регион</MenuItem>
         </Select>
       </FormControl>
-
       <FormControl>
         <InputLabel id="demo-simple-select-label">Y</InputLabel>
         <Select
-          sx={{ width: '100px', marginRight: '20px' }}
           labelId="demo-simple-select-label"
           id="demo-simple-select"
           value="dsadas"
-          label="у"
+          label="х"
+          sx={{ width: '100px', marginRight: '20px' }}
         >
           <MenuItem value={10}>Дата окончания КС</MenuItem>
           <MenuItem value={20}>Сумма КС</MenuItem>
@@ -454,6 +454,21 @@ export default function EnhancedTable() {
           <MenuItem value={30}>...</MenuItem>
           <MenuItem value={30}>...</MenuItem>
           <MenuItem value={20}>Регион</MenuItem>
+        </Select>
+      </FormControl>
+      <Button>Сформировать график</Button>
+
+      <FormControl>
+        <InputLabel id="demo-simple-select-label">Выберете график</InputLabel>
+        <Select
+          sx={{ width: '100px', marginRight: '20px' }}
+          labelId="demo-simple-select-label"
+          id="demo-simple-select"
+          value="dsadas"
+          label="Выберете график"
+        >
+          <MenuItem value={10}>Гистаграмма</MenuItem>
+          <MenuItem value={20}>Столбчатая</MenuItem>
         </Select>
       </FormControl>
     </Box>
