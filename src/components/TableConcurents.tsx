@@ -38,7 +38,8 @@ function createData(
   calories: number,
   fat: number,
   carbs: number,
-  protein: number
+  protein: number,
+  other_wins: string
 ): Data {
   return {
     id,
@@ -47,6 +48,7 @@ function createData(
     fat,
     carbs,
     protein,
+    other_wins,
   };
 }
 
@@ -113,6 +115,12 @@ const headCells: readonly HeadCell[] = [
     numeric: true,
     disablePadding: false,
     label: 'Мои победы',
+  },
+  {
+    id: 'other_wins',
+    numeric: true,
+    disablePadding: false,
+    label: 'Остальные победы',
   },
 ];
 
@@ -242,7 +250,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
 
 export default function EnhancedTable() {
   const [order, setOrder] = React.useState<Order>('asc');
-  const [orderBy, setOrderBy] = React.useState<keyof Data>('calories');
+  const [orderBy, setOrderBy] = React.useState<keyof Data>('fat');
   const [selected, setSelected] = React.useState<readonly number[]>([]);
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
@@ -270,7 +278,9 @@ export default function EnhancedTable() {
           `${item['competitor_wins']} / ${item['competitor_win_percentage']}%` ||
             'Нет данных', // name
           `${item['supplier_wins']} / ${item['supplier_win_percentage']}%` ||
-            'Нет данных' // name
+            'Нет данных',
+          `${item['other_wins']} / ${item['other_win_percentage']}%` ||
+            'Нет данных' // name // name
         )
       );
       setRows(newRows);
@@ -395,6 +405,7 @@ export default function EnhancedTable() {
                     <TableCell align="right">{row.fat}</TableCell>
                     <TableCell align="right">{row.carbs}</TableCell>
                     <TableCell align="right">{row.protein}</TableCell>
+                    <TableCell align="right">{row.other_wins}</TableCell>
                   </TableRow>
                 );
               })}
