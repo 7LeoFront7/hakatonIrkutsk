@@ -16,8 +16,8 @@ export default function PageViewsBarChart() {
     all_wins_count,
     all_wins_percentage,
     dataAsis,
-    dataEndPrice,
-    dataStartPrice,
+    dataWinsCount,
+    dataPartsCount,
   } = useGetParticipationYear(innState?.inn);
   const theme = useTheme();
   const colorPalette = [
@@ -63,14 +63,14 @@ export default function PageViewsBarChart() {
           series={[
             {
               id: 'page-views',
-              label: 'Start Price',
-              data: dataStartPrice,
+              label: 'Количество участий в КС',
+              data: dataPartsCount,
               stack: 'A',
             },
             {
               id: 'downloads',
-              label: 'End Price',
-              data: dataEndPrice,
+              label: 'Количество побед',
+              data: dataWinsCount,
               stack: 'A',
             },
           ]}
