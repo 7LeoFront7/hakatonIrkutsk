@@ -22,6 +22,25 @@ import { v4 as uuid } from 'uuid';
 import PanelsForCustomers from './PanelsForCustomers';
 import TableCustomers from './TableCustomers';
 import { useMainContext } from '../context';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
+import Button from '@mui/material/Button';
+
+const generatePdf = () => {
+  const input = document.getElementById('tab1-content'); // Убедитесь, что у вас есть id для содержимого таба
+
+  if (input) {
+    html2canvas(input).then((canvas) => {
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4'); // A4 размер, портретная ориентация
+      const imgWidth = 210; // Ширина A4 в мм
+      const imgHeight = (canvas.height * imgWidth) / canvas.width; // Масштабируем высоту
+
+      pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+      pdf.save('report.pdf'); // Сохраняем PDF
+    });
+  }
+};
 import { useGetParticipationYear } from '../api/useGetParticipationYear';
 
 const data: StatCardProps[] = [
@@ -202,41 +221,38 @@ export default function MainGrid() {
                           {provided.placeholder}
                         </Grid>
                       )}
-                    </Droppable>
-                  </DragDropContext>
-
-                  <Typography component="h2" variant="h6" sx={{ mb: 2 }}>
-                    Details
-                  </Typography>
-                  <Grid container spacing={2} columns={12}>
-                    <Grid size={{ xs: 12, lg: 9 }}>
-                      <CustomizedDataGrid />
-                    </Grid>
-                    <Grid size={{ xs: 12, lg: 3 }}>
-                      <Stack
-                        gap={2}
-                        direction={{ xs: 'column', sm: 'row', lg: 'column' }}
-                      >
-                        <CustomizedTreeView />
-                        <ChartUserByCountry />
-                      </Stack>
-                    </Grid>
-                  </Grid>
-                  <Copyright sx={{ my: 4 }} />
-                </>
+                    </Draggable>
+                  ))}
+                </Grid>
               )}
-              {el.id === 1 && <TableSession />}
-              {el.id === 2 && 'Item Three'}
-              {el.id === 3 && (
-                <>
-                  <PanelsForCustomers />
-                  <TableCustomers />
-                </>
-              )}
-              {el.id > 3 && <Portal></Portal>}
-            </CustomTabPanel>
-          );
-        })}
+            </Droppable>
+          </DragDropContext>
+          <Typography component="h2" variant="h6" sx={{ mb: 2 }}>
+            Details
+          </Typography>
+          <Grid container spacing={2} columns={12}>
+            <Grid size={{ xs: 12, lg: 9 }}>
+              <CustomizedDataGrid />
+            </Grid>
+            <Grid size={{ xs: 12, lg: 3 }}>
+              <Stack
+                gap={2}
+                direction={{ xs: 'column', sm: 'row', lg: 'column' }}
+              >
+                <CustomizedTreeView />
+                <ChartUserByCountry />
+              </Stack>
+            </Grid>
+          </Grid>
+          <Copyright sx={{ my: 4 }} />
+        </TabPanel>
+        <TabPanel value="2">
+          <TableSession />
+        </TabPanel>
+        <TabPanel value="3">
+          <PanelsForCustomers />
+          <TableCustomers />
+        </TabPanel>
       </TabContext>
     </Box>
   );

@@ -333,13 +333,10 @@ export default function EnhancedTable() {
     [order, orderBy, page, rowsPerPage, rows]
   );
 
-  const { innState } = useMainContext();
-
   return (
     <Box sx={{ width: '100%' }}>
       <Paper sx={{ width: '100%', mb: 2 }}>
         <EnhancedTableToolbar numSelected={selected.length} />
-        {innState}
         <TableContainer>
           <Table
             sx={{ minWidth: 750 }}
